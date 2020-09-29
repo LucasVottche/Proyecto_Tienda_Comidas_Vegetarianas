@@ -18,18 +18,18 @@ public class ComidaVersion1 {
 	public static void main(String[] args) {
 		//// VARIABLES///
 		int ingreso;
-		int calcularPrec;
 		int cantidad = 0;
-		double cantidadPedidosRegis=0;
-		double contadorHamburguesa = 0;
+		int cantidadPedidosRegis=0;
+		int contadorHamburguesa = 0;
 		double cantidadProductosVendidos=0;
 		double totalPago = 0;
+		int productosTotal = 0;
 		double descuentito = 0.90;
 		double totalRecaudado = 0;
 		double pedidoCaro = 0;
-		double envio=0;
-		double porcenHamburguesa = 0;
-		int elegirPro = 0;
+		double envio=50;
+		int elegirPro;
+		int total=0;
 		String otraCompra = "";
 		//// MAIN
 		System.out.println(BARRA);
@@ -37,72 +37,54 @@ public class ComidaVersion1 {
 		System.out.println(BARRA);
 		otraCompra = desearComprar();
 		while (!otraCompra.equals(OP2)) {
+			System.out.println(BARRA);
+			menuEthicalFood();
 			do {
 				System.out.println(BARRA);
-				menuEthicalFood();
-				System.out.println(BARRA);
 				ingreso = ingresoNumeroProducto();
-				if(ingreso!=0) {
-					System.out.println(BARRA);
-					elegirPro = elegirProductos(ingreso,cantidad);
-					cantidad = cantidaProductos();
-					
-					
-					////////////////////////////////////////////// IF DE TODO
-					if(ingreso==3) {
-						contadorHamburguesa+=cantidad;
-						
-					}
-					cantidadProductosVendidos+=cantidad;
-					System.out.println(BARRA);
-					calcularPrec = elegirProductos(ingreso, cantidad);
-					
-					// Mostrar Total a Pagar//
-					totalPago = totalPago + calcularPrec;
-					
+				System.out.println(BARRA);
+				cantidad = cantidaProductos(ingreso);
+				if (ingreso == 3) {
+					contadorHamburguesa += cantidad;
+
+				}
+				cantidadProductosVendidos += cantidad;
+				elegirPro = elegirProductos(ingreso, cantidad);
+				totalPago = totalPago + elegirPro;
 				
-					System.out.println("El total a pagar es de : " + totalPago);
-					
-					// descuento al Total a pagar
-					if (calcularPrec > 500 && cantidad > 3) {
-						totalPago = (totalPago * descuentito);
-					}
-					////////////////////////////////////
-					
-					
-					// pedido mas caro
-					if (calcularPrec > pedidoCaro) {
-						pedidoCaro = calcularPrec;
-					}
-					/////////////////////////
-					
-					
-					// PORCEN HAMBURGUESAS VENDIDAS SOBRE EL TOTAL PRODUCTOS VENDIDOS
-					if (contadorHamburguesa > 0) {
-						porcenHamburguesa = Math.round(( contadorHamburguesa / cantidadProductosVendidos  ) * 100);
-					}
-					////////////////////////////////////////////////////
-					// RECAUDACION TOTAL
-					totalRecaudado = totalRecaudado + totalPago;
-					
-					/////////////////////////////////////
-					
-					
-					// PEDIDOS REGISTRADOS
-					cantidadPedidosRegis++;
-					//////////////////////////////
-					
-				}else {
-					System.out.println(BARRA);
-					System.out.println("Compra Finalizada");
-					System.out.println(BARRA);
-				}/////////////////////// IF DE TODO ////////////////////////////////////////////
+
+			} while (ingreso != 0);
 			
-			} while(ingreso!=0);
-			envio=totalPago+50;
+			
+			if (elegirPro > 500 && cantidadProductosVendidos > 3) {
+				totalPago = (totalPago * descuentito);
+			}
+		
+				System.out.println(BARRA);
+				if(cantidadProductosVendidos>=1) {
+	                cantidadPedidosRegis++;
+	                totalPago+=envio;
+	                productosTotal  +=cantidadProductosVendidos;
+	                totalRecaudado=totalRecaudado+totalPago;
+	            	if (totalPago > pedidoCaro) {
+						pedidoCaro = totalPago;
+					}
+	                System.out.println("El precio de su pedido es de: $"+ totalPago);
+	                totalPago=0;
+	            }
+			
+			
 			otraCompra = desearComprar();
 		}
-	 mostrarResultado(cantidadPedidosRegis, cantidadProductosVendidos, totalRecaudado, porcenHamburguesa, pedidoCaro);
+		if (cantidadPedidosRegis > 0) {
+			mostrarResultado(cantidadPedidosRegis, cantidadProductosVendidos, totalRecaudado, contadorHamburguesa,
+					pedidoCaro, productosTotal);
+		} else {
+			System.out.println("No hubo ventas");
+		}
+
+		
+	
 	}
 
 	public static void menuEthicalFood() {
@@ -115,7 +97,7 @@ public class ComidaVersion1 {
 	}
 
 	public static int ingresoNumeroProducto() {
-		int num = 0;
+		int num ;
 
 		System.out.print("Ingrese el numero de producto que desee elegir : ");
 		num = input.nextInt();
@@ -124,21 +106,26 @@ public class ComidaVersion1 {
 		return num;
 	}
 
-	public static int cantidaProductos() {
-		int cantidad = 0;
+	public static int cantidaProductos(int ingreso) {
+		int cantidad;
+		if (ingreso != 0) {
 		System.out.print("Ingrese la cantidad de productos : ");
 		cantidad = input.nextInt();
 		while (cantidad < 0) {
-			System.out.println("Error:  la cantidad debe ser mayor a 0 :");
+			System.out.println(BARRA);
+			System.out.print("Error:  la cantidad debe ser mayor a 0 : ");
 			cantidad = input.nextInt();
+			System.out.println(BARRA);
+		} 
+	} else {
 
+			cantidad = 0;
 		}
 		return cantidad;
 
-	}
-
+	} 
 	public static int elegirProductos(int num , int cantidad) {
-		int total = 0;
+		int total=0;
 		String elegir;
 		switch (num) {
 		case 1:
@@ -167,8 +154,11 @@ public class ComidaVersion1 {
 	public static int validarIngresoProducto(int num) {
 
 		while (num <0 || num > 4) {
-			System.out.println("Error:  El numero de producto debe ser de  0  a 4 minimo :");
+			System.out.println(BARRA);
+			
+			System.out.print("Error:  El numero de producto debe ser de  0  a 4 minimo : ");
 			num = input.nextInt();
+			System.out.println(BARRA);
 
 		}
 		return num;
@@ -187,13 +177,14 @@ public class ComidaVersion1 {
 
 		return otraCompra;
 	}
-	public static void mostrarResultado(double cantidadPedidosRegis, double cantidadProductosVendidos, double totalRecaudado, double porcenHamburguesa, double pedidoCaro ) {
+	public static void mostrarResultado(double cantidadPedidosRegis, double cantidadProductosVendidos, double totalRecaudado, double contadorHamburguesa, double pedidoCaro, double productosTotal ) {
 		System.out.println(BARRA);
 		System.out.println("La cantidad de pedidos registrados : " + cantidadPedidosRegis);
 		System.out.println("Cantidad de productos vendidos : " + cantidadProductosVendidos);
 		System.out.println("Total Recaudado : " + totalRecaudado);
-		System.out.println("El porcentaje de hamburguesas vendidas sobre el total de productos vendidos : " + porcenHamburguesa);
-		System.out.println("El valor del pedido m·s caro : " + pedidoCaro);
+		System.out.println("La cantidad promedio de productos por pedido es de: " + Math.round(productosTotal / cantidadPedidosRegis));
+		System.out.println("El porcentaje de hamburguesas vendidas sobre el total de productos vendidos : " + (contadorHamburguesa/productosTotal)*100+"%");
+		System.out.println("El valor del pedido m√°s caro : " + pedidoCaro);
 		System.out.println(BARRA);
 	}
 	
